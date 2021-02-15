@@ -1,0 +1,20 @@
+{
+  "name": "medino-nline",
+  "version": "1.0.0",
+  "description": "Product web scraper for medino.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surajs02/medino-nline.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/surajs02/medino-nline/issues"
+  },
+  "homepage": "https://github.com/surajs02/medino-nline#readme"
+}
