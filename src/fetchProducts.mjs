@@ -1,9 +1,8 @@
 import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
-import { delimitKeys } from './util.mjs';
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
-import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries } from './util.mjs'; 
+import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue } from './util.mjs';
 
 const tProducts = comp(first, shiftN(2))(process.argv);
 
@@ -35,6 +34,14 @@ ife(async () => {
 
     console.info(`Got ${products.length} products from ${pageNum} pages, showing ${tProducts} products:\n`);
 
-    console.info(`${comp(delimitKeys(), first)(products)}`);
-    console.info(comp(join('\n'), map(filterBlankEntries), take(tProducts))(products));
+    const header = comp(delimitKeys(), first)(products);
+    const productsCsv = comp(join('\n'), queue(header), map(filterBlankEntries), take(tProducts))(products);
+
+    console.info(productsCsv);
+
+    const buildPath = comp(pathJoin('build'), fileUrlToDirname)(`${import.meta.url}/..`);
+    const productsPath = pathJoin('products.csv')(buildPath);
+
+    await ensureDirExists(buildPath);
+    await fileWrite(productsPath, productsCsv);
 });

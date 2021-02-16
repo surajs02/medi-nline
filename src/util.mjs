@@ -4,6 +4,9 @@
 
 import axios from 'axios';
 import cheerio from 'cheerio';
+import fs from 'fs';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 export const identity = v => v;
 export const tauto = () => true;
@@ -25,13 +28,14 @@ export const isEmpty = v => {
     }
 };
 export const isBlankStr = (s = '') => s.trim().length < 1;
+export const negate = (p = noop) => (...a) => !p(...a);
 
 export const comp = (...fs) => x => fs.reverse().reduce((a, v) => v(a), x);
 export const map = (t = identity) => (a = []) => a.map(t);
 export const filter = (p = tauto) => (a = []) => a.filter(p);
 export const first = (a = []) => a[0];
 export const tail = ([, ...a]) => a;
-export const negate = (p = noop) => (...a) => !p(...a);
+export const queue = v => (a = []) => [v, ...a];
 // NOTE: Eslint doesn't understand recursion.
 // eslint-disable-next-line no-unused-vars
 export const shiftN = n => (a = []) => n < 1 ? a : shiftN(--n)(tail(a)); // DEPRECATED over `sliceN` but still a good ref.
@@ -77,3 +81,30 @@ export const querySelectorAllNodes = (s = '') => html => {
     const $ = cheerio.load(html);
     return [$(s).toArray(), $];
 };
+
+// NOTE: ES modules seem to lack `__filename` & __dirname`.
+export const getFilename = fileUrl => fileURLToPath(fileUrl);
+export const getDirname = filename => dirname(filename);
+export const fileUrlToDirname = fileUrl => getDirname(getFilename(fileUrl));
+export const pathJoin = (...filenames) => p => path.join(p, ...filenames);
+export const fileExists = p =>
+    new Promise(r => fs.access(
+        p, fs.constants.F_OK, e => r(e == null)
+    ));
+// Overwrite.
+export const fileWrite = (p, data) =>
+    new Promise((r, j) => fs.writeFile(
+        p, data, e => e ? j(e) : r()
+    ));
+export const getPathStat = p => new Promise(
+    (r, j) => fs.lstat(p, (e, stats) => e == null ? r(stats) : j(e))
+);
+export const isFilePath = async p => (await getPathStat(p)).isFile();
+export const isDirPath = async p => (await getPathStat(p)).isDirectory();
+export const createDir = p => new Promise(
+    (r, j) => fs.mkdir(p, e => e == null ? r() : j(e))
+);
+export const ensureDirExists = async p => {
+    if (!(await fileExists(p)) || !(await isDirPath(p))) await createDir(p);
+};
+
