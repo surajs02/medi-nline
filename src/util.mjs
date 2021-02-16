@@ -7,6 +7,7 @@ import cheerio from 'cheerio';
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import readline from 'readline';
 
 export const identity = v => v;
 export const tauto = () => true;
@@ -108,3 +109,10 @@ export const ensureDirExists = async p => {
     if (!(await fileExists(p)) || !(await isDirPath(p))) await createDir(p);
 };
 
+export const readCliInput = async prompt => {
+    const cli = readline.createInterface(process.stdin, process.stdout);
+    const input = await new Promise(r => cli.question(prompt, r));
+    cli.close();
+    return input;
+};
+export const readIsCliInputYes = async prompt => first(await readCliInput(`${prompt} (y or N): `)).toLowerCase() === 'y';
