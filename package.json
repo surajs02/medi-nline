@@ -2,9 +2,13 @@
   "name": "medino-nline",
   "version": "1.0.0",
   "description": "Product web scraper for medino.",
-  "main": "index.js",
+  "main": "index.mjs",
+  "engines": {
+    "node": ">=13.0.0"
+  },
+  "type": "module",
   "scripts": {
-    "start": "node ./src/index.js"
+    "start": "node ./src/fetchProducts.mjs"
   },
   "repository": {
     "type": "git",
@@ -16,5 +20,17 @@
   "bugs": {
     "url": "https://github.com/surajs02/medino-nline/issues"
   },
-  "homepage": "https://github.com/surajs02/medino-nline#readme"
+  "homepage": "https://github.com/surajs02/medino-nline#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/eslint-plugin": "^7.12.1",
+    "eslint": "^7.20.0",
+    "eslint-config-jsx": "^1.0.2",
+    "eslint-plugin-react": "^7.21.5"
+  }
 }
