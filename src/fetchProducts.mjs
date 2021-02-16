@@ -1,7 +1,9 @@
 import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
+import { delimitKeys } from './util.mjs';
 
 // Prefer fully quantified extensions.
-import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues } from './util.mjs'; // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
+// NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
+import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries } from './util.mjs'; 
 
 const tProducts = comp(first, shiftN(2))(process.argv);
 
@@ -19,6 +21,7 @@ const productClasses = {
 };
 const elToProduct = $ => el => mapValues(c => $(`.${c}`, el).text())(productClasses);
 
+// NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
 const getProducts = async (pageNum = 1, products = []) => {
     const $ = cheerio.load(await axiosGetData(MEDINO_POPULAR_URL + pageNum));
     products = $('.product-list-item').toArray().map(elToProduct($));
@@ -28,7 +31,10 @@ const getProducts = async (pageNum = 1, products = []) => {
 };
 
 ife(async () => {
-    const [products] = await getProducts();
+    const [products, pageNum] = await getProducts();
 
-    console.debug('products', products);
+    console.info(`Got ${products.length} products from ${pageNum} pages, showing ${tProducts} products:\n`);
+
+    console.info(`${comp(delimitKeys(), first)(products)}`);
+    console.info(comp(join('\n'), map(filterBlankEntries), take(tProducts))(products));
 });
