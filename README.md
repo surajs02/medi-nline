@@ -1,6 +1,6 @@
 # medino-nline
 
-A Node CLI web scraper that fetches & prints `N` lines of product names with prices from the medino website.
+A Node CLI web scraper that fetches & prints `N` lines of product names with prices from the Medino website.
 
 ## Install
 
@@ -13,9 +13,75 @@ npm install
 
 ## Usage
 
+**NOTE**: This tool won't exceed 10 pages to avoid overwhelming servers.
+
+Scrape 100 products:
 ```bash
-npm start 1 # E.g., prints 'Nurofen Plus 32 Tablets,8.99'.
+npm start 100
 ```
+
+Example output:
+```
+Fetching N=[50] products ...
+Got [96] products from [2] pages, showing [50] products:
+
+name,price,retailPrice
+Selsun Dandruff Treatment Shampoo 2.5% 100ml,£3.29
+Bimuno Daily 30 Sachets,£9.89,£11.99
+HuxD3 20,000 IU 30 Vegetarian Capsules,£6.79
+Nurofen Plus 32 Tablets,£8.99
+Viscotears Liquid Gel Eye Drops 10g,£2.79
+Selsun Dandruff Shampoo 2.5% 150ml,£5.59
+Johnson's Face Care Daily Essentials Gentle Make-Up Removal Pads 30 Pads,£2.99
+BetterYou Dlux+ Vitamin D + K2 Oral Spray 12ml,£5.91
+Bristol Co-codamol 8/500 mg 32 Tablets,£2.09
+Salactol Wart Paint 10ml,£2.89,£3.10
+KN95 Respiratory Protective Mask 1s,£2.39
+Always Maxi Classic Night Pads 8s,£0.99,£1.95
+Dermol Lotion 500ml,£9.49,£11.97
+Celluvisc Eye Drops 1% w/v Unite Dose 30s',£4.29
+Adcal-D3 Fruit flavoured 56 Chewable Tablets,£5.99
+Oral-B Super Floss Pre-Cut 50s,£1.79
+Care Hydrogen Peroxide Solution 6% 20 vols 200ml,£1.49
+Colgate Maximum Cavity Protection Fresh Mint Toothpaste 75ml,£1.49
+The Goat Soap With Manuka Honey 100g,£2.59,£3.50
+Golden Eye Ointment 5g,£6.69
+Kamill Hand & Nail Cream Intensive 100ml,£1.49,£4.99
+Johnson's Face Care Daily Essentials Hydrating 24 Hour Day Cream SPF 15 50ml,£2.39
+Kotex Maxi Super 14 Pads,£1.15
+Always Classic Maxi Wings 9s,£0.99
+Adcal -D3 750mg/200 I.U 112 Caplets,£4.99
+Solgar Niacin (Vitamin B3) 500 mg 100 Capsules,£8.49,£11.75
+OptiBac Probiotics For women 30 Capsules,£15.99,£18.99
+Gaviscon Advance Peppermint 500ml,£7.99
+Solgar Vitamin D3 2500 IU (62.5µg) Liquid 59ml,£9.99,£12.50
+Natures Aid Serrapeptase 250,000iu 60 Tablets,£22.99,£29.95
+Bristol Paracetamol 500mg 32 Capsules,£1.59
+Halls Sugar Free Cherry Menthol Action 32g,£0.69
+Eucerin Dry Skin Intensive Lotion 250ml,£11.99,£13.16
+Ferrograd-C Prolonged Released 30 Tablets,£4.99
+Arm & Hammer Extra White Care Baking Soda Toothpaste 125g,£1.29
+Solgar Zinc 50mg 100 Tablets,£8.19,£10.50
+BetterYou Dlux4000 Vitamin D Oral Spray 15ml,£5.91
+Numark Paracetamol 500mg 32 Caplets,£0.99,£1.20
+Nair Sensitive Hair Removal Cream 80ml,£1.09
+Bristol Aspirin 75mg Gastro-Resistant  28 Tablets,£1.59
+Celluvisc Eye Drops 0.5% x/v Unite Dose 30x0.4ml,£6.79
+Gaviscon Advance Aniseed Suspension 500ml,£7.99
+Nytol One-A-Night 50mg Tablets 20 Tablets,£6.69,£6.89
+Kotex Maxi Night-Time  10 pads,£1.39
+Panadol Advance 16 Tablets,£1.49,£1.65
+Panadol Extra Advanced 32 Tablets,£3.99
+Care Hydrogen Peroxide Solution 9% 30 vols 200ml,£2.19
+Golden Eye Conjunctivitis Ointment 4g,£6.69
+Solgar Vitamin D3 400 IU (10 μg) 100 softgels,£5.99,£7.75
+Solpadeine Max 30 Tablets,£7.49
+
+Save products as csv? (y or N):
+
+```
+
+## Example out
 
 ## Contributing
 
@@ -39,3 +105,45 @@ Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/pack
 - Show price savings
 - Allow sort/filter
 
+## Medino Site Critique
+
+### Good:
+- simple, well branded site
+- functional accounts, product categories/browsing/search
+- advice section is a good addition and could serve as an area for potential expansion and community engagement (eg blog posts, site changes, promotions, etc)
+
+### Improvable:
+- product UI is busy and key information is scattered in a format that isn't consistent with established e-commerce conventions, eg:
+    - 3-4 products per row to allow more space to present product data like images
+    - product cards should include in order:
+        - for category browsing: image, reviews, optional promoting, price, saving, purchase call-to-action
+        - additional useful options:
+            - amount data: ml/litres/grams/kg
+            - bookmark/favourite/wishlist
+- allow product comparison
+- support customer questions & answers (ie customer to customer support may reveal issues not reported to customer support or customers may make beneficial recommendations)
+- potentially missed opportunity for sponsored products
+- carousels to showcase promotions
+- search results layout should be a list as difficult for users to distinguish from category browsing pages
+- progressing pages requires the user to click 'load more' button (which appears to append rather than page hence should be refactorable to infinite scroll), which adds friction to the core browsing UX:
+    - from a UX perspective: increasing user resources/effort reduces engagement time hence reduces potential sales, can be improved via infinite scroll (eg [Wiki Randoms](https://www.gosuraj.com/projects/wiki-randoms/))
+    - from a development perspective: can be resolved without reinventing the wheel via existing infinite scroll solutions (a wealth of existing well supported solutions is a benefit of using popular UI libraries such as React)
+- no go-to-top button adds further friction to browsing (although potentially offset by the simple useful category links sidebar)
+- wording: eg
+> Order within 6hrs 53mins to have it sent out today.
+
+but could be:
+> Order within 6hrs 53mins for same day delivery
+- very simple basket, could be improved:
+    - with save-for-later feature (reduces user resources as less effort saving/revisiting products)
+    - quantity picker should be a dropdown to
+    - show total savings to close sale & promote future sales
+    - support & show bookmarked, past purchases, etc
+- product page:
+    - product in categories could group categories
+    - compare with similar items
+    - allow reporting incorrect info
+    - buy now option
+    - frequently bought together
+    - share
+- a styleguide could be created to ensure UI components (cards, buttons, etc) are consistent hence effectively communicating a brand design language that can become familiar to users (e.g., Material Design - but can be made specific to a product with dedicated buttons for positive/negative/aux actions, which ensures users are confident at quickly locating an action and understanding what its operation intuitively)
