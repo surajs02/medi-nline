@@ -17,18 +17,18 @@ const productClasses = {
     price: 'product-list-price-span',
     retailPrice: 'rrp',
 };
+const elToProduct = $ => el => mapValues(c => $(`.${c}`, el).text())(productClasses);
+
+const getProducts = async (pageNum = 1, products = []) => {
+    const $ = cheerio.load(await axiosGetData(MEDINO_POPULAR_URL + pageNum));
+    products = $('.product-list-item').toArray().map(elToProduct($));
+    return pageNum < MAX_PAGES && products.length < tProducts
+        ? await getProducts(++pageNum, products)
+        : [products, pageNum];
+};
 
 ife(async () => {
-    let products = [];
-
-    const elToProduct = $ => el => mapValues(c => $(`.${c}`, el).text())(productClasses);
-
-    let i = 1;
-    while (i < MAX_PAGES && products.length < tProducts) {
-        const $ = cheerio.load(await axiosGetData(MEDINO_POPULAR_URL + i));
-        products = $('.product-list-item').toArray().map(elToProduct($));
-        i++;
-    }
+    const [products] = await getProducts();
 
     console.debug('products', products);
 });
