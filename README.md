@@ -1,5 +1,7 @@
 # medino-nline
 
+<div align="center"><img src="./logo/nline.png" width="50%"/></div>
+
 A Node CLI web scraper that fetches & prints `N` lines of product names with prices from the Medino website.
 
 ## Install
