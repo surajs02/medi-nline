@@ -1,7 +1,7 @@
 {
-  "name": "medino-nline",
+  "name": "medi-nline",
   "version": "1.0.0",
-  "description": "Product web scraper for medino.",
+  "description": "Product web scraper for a pharmacy website.",
   "main": "index.mjs",
   "engines": {
     "node": ">=13.0.0"
@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/surajs02/medino-nline.git"
+    "url": "git+https://github.com/surajs02/medi-nline.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/surajs02/medino-nline/issues"
+    "url": "https://github.com/surajs02/medi-nline/issues"
   },
-  "homepage": "https://github.com/surajs02/medino-nline#readme",
+  "homepage": "https://github.com/surajs02/medi-nline#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.5"

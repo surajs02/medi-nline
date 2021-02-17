@@ -1,9 +1,8 @@
 import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
-import { readIsCliInputYes } from './util.mjs';
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
-import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue } from './util.mjs';
+import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes } from './util.mjs';
 
 const tProducts = comp(first, shiftN(2))(process.argv);
 
@@ -11,7 +10,7 @@ if (!isIntLike(tProducts)) throw Error(`N must be an natural number but got [${t
 
 console.info(`Fetching N=[${tProducts}] products ...`);
 
-const MEDINO_POPULAR_URL = 'https://www.medino.com/popular-products?up-to-page=';
+const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`; // Domain fuzzed for privacy.
 const MAX_PAGES = 10;
 
 const productClasses = {
@@ -23,7 +22,7 @@ const elToProduct = $ => el => mapValues(c => $(`.${c}`, el).text())(productClas
 
 // NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
 const extractProducts = async (pageNum = 1, products = []) => {
-    const $ = cheerio.load(await axiosGetData(MEDINO_POPULAR_URL + pageNum));
+    const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     products = $('.product-list-item').toArray().map(elToProduct($));
     return pageNum < MAX_PAGES && products.length < tProducts
         ? await extractProducts(++pageNum, products)

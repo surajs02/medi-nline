@@ -1,14 +1,14 @@
-# medino-nline
+# medi-nline
 
 <div align="center"><img src="./logo/nline.png" width="50%"/></div>
 
-`medino-nline` is a a Node CLI web scraper that fetches products from the Medino website, which are printed and optionally saved as `csv`.
+`medi-nline` is a Node CLI web scraper that fetches products from a pharmacy website, which are printed and optionally saved as `csv`.
 
 ## Install
 
 ```bash
-git clone https://github.com/surajs02/medino-nline.git
-cd medino-nline
+git clone https://github.com/surajs02/medi-nline.git
+cd medi-nline
 node -v # v14.15.5 (LTS), although minimum v13 is required.
 npm install
 ```
@@ -105,7 +105,7 @@ Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/pack
 - Show price savings
 - Allow sort/filter
 
-## Medino Site Critique
+## Medi Site Critique
 
 ### Good:
 - simple, well branded site
