@@ -2,7 +2,7 @@
 
 <div align="center"><img src="./logo/nline.png" width="50%"/></div>
 
-A Node CLI web scraper that fetches & prints `N` lines of product names with prices from the Medino website.
+`medino-nline` is a A Node CLI web scraper that fetches products from the Medino website, which are printed and optionally saved as `csv`.
 
 ## Install
 
@@ -96,8 +96,9 @@ Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/pack
 
 ## Future Plans
 
-- Logo
-- Cache result
+- [x] Logo
+- [x] Cache result
+- Add option to open saved csv
 - Functional methods
 - Live reload
 - Unit tests
