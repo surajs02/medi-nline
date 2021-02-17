@@ -133,7 +133,9 @@ Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/pack
 > Order within 6hrs 53mins to have it sent out today.
 
 but could be:
-> Order within 6hrs 53mins for same day delivery
+> Order within 6hrs 53mins start delivery today
+Or (if next day delivery is possible)
+> Order within 6hrs 53mins for next day delivery
 - very simple basket, could be improved:
     - with save-for-later feature (reduces user resources as less effort saving/revisiting products)
     - quantity picker should be a dropdown to minimize user clicks/effort
