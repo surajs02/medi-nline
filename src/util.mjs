@@ -28,8 +28,11 @@ export const isEmpty = v => {
         return false;
     }
 };
-export const isBlankStr = (s = '') => s.trim().length < 1;
 export const negate = (p = noop) => (...a) => !p(...a);
+export const eq = v1 => v2 => v1 === v2;
+
+export const isBlankStr = (s = '') => s.trim().length < 1;
+export const toLower = (s = '') => s.toLowerCase();
 
 export const comp = (...fs) => x => fs.reverse().reduce((a, v) => v(a), x);
 export const map = (t = identity) => (a = []) => a.map(t);
@@ -114,4 +117,4 @@ export const readCliInput = async prompt => {
     cli.close();
     return input;
 };
-export const readIsCliInputYes = async prompt => first(await readCliInput(`${prompt} (y or N): `)).toLowerCase() === 'y';
+export const readIsCliInputYes = async prompt => comp(eq('y'), first, toLower)(await readCliInput(`${prompt} (y or N): `));
