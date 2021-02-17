@@ -39,7 +39,7 @@ export const tail = ([, ...a]) => a;
 export const queue = v => (a = []) => [v, ...a];
 // NOTE: Eslint doesn't understand recursion.
 // eslint-disable-next-line no-unused-vars
-export const shiftN = n => (a = []) => n < 1 ? a : shiftN(--n)(tail(a)); // DEPRECATED over `sliceN` but still a good ref.
+export const shiftN = n => (a = []) => n < 1 ? a : shiftN(--n)(tail(a)); // DEPRECATED over cleaner `sliceN` but still a good ref.
 export const sliceN = n => (a = []) => a.slice(n);
 export const take = n => (a = []) => a.slice(0, n);
 export const range = (end = 10, start = 0) => [...Array(end).keys()].map(n => n + start);
@@ -70,7 +70,6 @@ export const throwIf = (p = () => true, m = 'No error message') => v => p()
     })
     : v;
 
-export const isPositive = (n = 1) => n > 0;
 export const isIntLike = v => {
     const _v = parseInt(v);
     return !isNaN(_v) && Number.isInteger(_v);

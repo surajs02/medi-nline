@@ -2,7 +2,7 @@
 
 <div align="center"><img src="./logo/nline.png" width="50%"/></div>
 
-`medino-nline` is a A Node CLI web scraper that fetches products from the Medino website, which are printed and optionally saved as `csv`.
+`medino-nline` is a a Node CLI web scraper that fetches products from the Medino website, which are printed and optionally saved as `csv`.
 
 ## Install
 
@@ -80,10 +80,7 @@ Solgar Vitamin D3 400 IU (10 μg) 100 softgels,£5.99,£7.75
 Solpadeine Max 30 Tablets,£7.49
 
 Save products as csv? (y or N):
-
 ```
-
-## Example out
 
 ## Contributing
 
@@ -139,7 +136,7 @@ but could be:
 > Order within 6hrs 53mins for same day delivery
 - very simple basket, could be improved:
     - with save-for-later feature (reduces user resources as less effort saving/revisiting products)
-    - quantity picker should be a dropdown to
+    - quantity picker should be a dropdown to minimize user clicks/effort
     - show total savings to close sale & promote future sales
     - support & show bookmarked, past purchases, etc
 - product page:
