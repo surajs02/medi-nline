@@ -17,9 +17,9 @@ npm install
 
 **NOTE**: This tool won't exceed 10 pages to avoid overwhelming servers.
 
-Scrape 100 products:
+Scrape 50 products:
 ```bash
-npm start 100
+npm start 50
 ```
 
 Example output:
