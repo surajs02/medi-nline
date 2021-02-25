@@ -20,16 +20,17 @@ const productClasses = {
     retailPrice: 'rrp',
 };
 // NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
-const fetchProducts = async (tProducts, pageNum = 1, products = []) => {
+const fetchProducts = async (tProducts, pageNum = 1) => {
     const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     const getElByClass = containerEl => c => $(`.${c}`, containerEl);
     const getElText = el => el.text();
     const elToProduct = el => mapValues(comp(getElText, getElByClass(el)))(productClasses);
 
-    products = $('.product-list-item').toArray().map(elToProduct);
-    return pageNum < MAX_PAGES && products.length < tProducts
-        ? await fetchProducts(tProducts, ++pageNum, products)
-        : [take(tProducts)(products), pageNum]; // TODO: Cleanup.
+    // NOTE: Avoid passing products in recursion since each pages are additive (i.e., appends new products)
+    const products = $('.product-list-item').toArray().map(elToProduct);
+    return pageNum < MAX_PAGES && count(products) < tProducts
+        ? await fetchProducts(tProducts, ++pageNum)
+        : [take(tProducts)(products), pageNum];
 };
 
 const writeProductsCsv = async csv => {
