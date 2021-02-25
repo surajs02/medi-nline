@@ -2,34 +2,35 @@ import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
-import { comp, first, shiftN, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes } from './util.mjs';
-
-const tProducts = comp(first, shiftN(2))(process.argv);
-
-if (!isIntLike(tProducts)) throw Error(`N must be an natural number but got [${tProducts}]`);
-
-console.info(`Fetching N=[${tProducts}] products ...`);
+import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes, throwIf, countIsNone, negate, skip, count } from './util.mjs';
 
 const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`; // Domain fuzzed for privacy.
-const MAX_PAGES = 10;
+const MAX_PAGES = 10; // TODO: Concurrent page fetch.
+
+const getTotalProductsArg = () => {
+    const throwIfMissingArg = throwIf(countIsNone, 'Missing arg'); // TODO: Add types.
+    const throwIfInvalidNumber = throwIf(negate(isIntLike), 'N must be an natural number');
+    const getValidTotalProductsArg = comp(throwIfInvalidNumber, first, throwIfMissingArg, skip(2));
+    return getValidTotalProductsArg(process.argv);
+};
 
 const productClasses = {
     name: 'product-list-link-text',
     price: 'product-list-price-span',
     retailPrice: 'rrp',
 };
-const elToProduct = $ => el => mapValues(c => $(`.${c}`, el).text())(productClasses);
-
 // NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
-const extractProducts = async (pageNum = 1, products = []) => {
+const fetchProducts = async (tProducts, pageNum = 1, products = []) => {
     const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
-    products = $('.product-list-item').toArray().map(elToProduct($));
-    return pageNum < MAX_PAGES && products.length < tProducts
-        ? await extractProducts(++pageNum, products)
-        : [products, pageNum];
-};
+    const getElByClass = containerEl => c => $(`.${c}`, containerEl);
+    const getElText = el => el.text();
+    const elToProduct = el => mapValues(comp(getElText, getElByClass(el)))(productClasses);
 
-const fetchProducts = async () => await extractProducts();
+    products = $('.product-list-item').toArray().map(elToProduct);
+    return pageNum < MAX_PAGES && products.length < tProducts
+        ? await fetchProducts(tProducts, ++pageNum, products)
+        : [take(tProducts)(products), pageNum]; // TODO: Cleanup.
+};
 
 const writeProductsCsv = async csv => {
     const buildPath = comp(pathJoin('build'), fileUrlToDirname)(`${import.meta.url}/..`);
@@ -43,20 +44,25 @@ const writeProductsCsv = async csv => {
 
 const productsToCsv = products => {
     const header = comp(delimitKeys(), first)(products);
-    return comp(join('\n'), queue(header), map(filterBlankEntries), take(tProducts))(products);
+    return comp(join('\n'), queue(header), map(filterBlankEntries))(products);
 };
 
 ife(async () => {
-    // Prefer side effects like logs outside pure functions.
-    const [products, pageNum] = await fetchProducts();
-    console.info(`Got [${products.length}] products from [${pageNum}] pages, showing [${tProducts}] products:\n`);
+    const tProducts = getTotalProductsArg();
 
+    console.info(`Fetching N=[${tProducts}] products ...`);
+
+    const [products, pageNum] = await fetchProducts(tProducts);
     const productsCsv = productsToCsv(products);
+
+    // Prefer side effects like logs outside pure functions.
+    console.info(`Got [${count(products)}] products from [${pageNum}] pages, showing [${tProducts}] products:\n`);
     console.info(productsCsv);
 
+    const writeToFile = await readIsCliInputYes('\nSave products as csv?');
     // Prefer returning in functions.
     return console.info(
-        await readIsCliInputYes('\nSave products as csv?')
+        writeToFile
             ? `Wrote products csv to [${await writeProductsCsv(productsCsv)}]`
             : 'Did not write products'
     );

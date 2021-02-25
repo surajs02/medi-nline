@@ -30,11 +30,13 @@ export const isEmpty = v => {
 };
 export const negate = (p = noop) => (...a) => !p(...a);
 export const eq = v1 => v2 => v1 === v2;
+export const valueType = v => typeof v;
+export const isValueType = valueType => v => typeof v === valueType;
 
 export const isBlankStr = (s = '') => s.trim().length < 1;
 export const toLower = (s = '') => s.toLowerCase();
 
-export const comp = (...fs) => x => fs.reverse().reduce((a, v) => v(a), x);
+export const comp = (...fs) => (...x) => [...fs].reverse().reduce((a, v, i) => i > 0 ? v(a) : v(...a), x);
 export const map = (t = identity) => (a = []) => a.map(t);
 export const filter = (p = tauto) => (a = []) => a.filter(p);
 export const first = (a = []) => a[0];
@@ -42,11 +44,15 @@ export const tail = ([, ...a]) => a;
 export const queue = v => (a = []) => [v, ...a];
 // NOTE: Eslint doesn't understand recursion.
 // eslint-disable-next-line no-unused-vars
-export const shiftN = n => (a = []) => n < 1 ? a : shiftN(--n)(tail(a)); // DEPRECATED over cleaner `sliceN` but still a good ref.
-export const sliceN = n => (a = []) => a.slice(n);
+export const shiftN = n => (a = []) => n < 1 ? a : shiftN(--n)(tail(a)); // DEPRECATED over cleaner `skip` but still a good ref.
+export const skip = n => (a = []) => a.slice(n);
 export const take = n => (a = []) => a.slice(0, n);
 export const range = (end = 10, start = 0) => [...Array(end).keys()].map(n => n + start);
 export const join = (delimiter = ',') => (a = []) => a.join(delimiter);
+export const count = (a = []) => a.length;
+export const countIs = n => (a = []) => a.length === n;
+export const countIsAny = (a = []) => a.length >= 1;
+export const countIsNone = (a = []) => a.length <= 0;
 
 export const keys = (o = {}) => Object.keys(o);
 export const values = (o = {}) => Object.values(o);
@@ -67,11 +73,15 @@ export const delimitValues = (delimiter = ',') => (o = {}) => reduceEntries((v, 
 
 // Prefer `ife` aka IIFE to reduce parentheses.
 export const ife = (f = noop, ...a) => (() => f(...a))();
-export const throwIf = (p = () => true, m = 'No error message') => v => p()
+export const throwIf = (p = () => true, m = 'No error message') => v => p(v)
     ? ife(() => {
         throw new Error(m);
     })
     : v;
+export const log = (m, { logger = console.debug, t = identity } = {}) => (...a) => {
+    logger(m, ...a.map(t));
+    return a[0];
+};
 
 export const isIntLike = v => {
     const _v = parseInt(v);
