@@ -47,12 +47,23 @@ export const queue = v => (a = []) => [v, ...a];
 export const shiftN = n => (a = []) => n < 1 ? a : shiftN(--n)(tail(a)); // DEPRECATED over cleaner `skip` but still a good ref.
 export const skip = n => (a = []) => a.slice(n);
 export const take = n => (a = []) => a.slice(0, n);
+export const takePartition = (takeTo = 1, partitionFrom) => (a = []) => [a.slice(0, takeTo), a.slice(takeTo > 0 ? takeTo : partitionFrom, a.length)];
+export const takeWhile = (p = () => false) => (a = []) => {
+    let res = [];
+    while (a.length > 0 && p(a[0], a)) {
+        res = res.concat(take(1)(a));
+        a = skip(1)(a);
+    }
+    return res;
+};
 export const range = (end = 10, start = 0) => [...Array(end).keys()].map(n => n + start);
 export const join = (delimiter = ',') => (a = []) => a.join(delimiter);
 export const count = (a = []) => a.length;
 export const countIs = n => (a = []) => a.length === n;
 export const countIsAny = (a = []) => a.length >= 1;
 export const countIsNone = (a = []) => a.length <= 0;
+export const difference = (a1 = [], t = identity) => (a2 = []) => a2.filter(v => !a1.includes(t(v)));
+export const filterPartition = (p = tauto) => (a = []) => [a.filter(p), a.filter(negate(p))];
 
 export const keys = (o = {}) => Object.keys(o);
 export const values = (o = {}) => Object.values(o);
@@ -86,6 +97,21 @@ export const log = (m, { logger = console.debug, t = identity } = {}) => (...a) 
 export const isIntLike = v => {
     const _v = parseInt(v);
     return !isNaN(_v) && Number.isInteger(_v);
+};
+
+export const promiseMap = (t = () => Promise.resolve, { concurrency = Infinity, results = [] } = {}) => async (data = []) => {
+    if (data.length < 1) return results;
+
+    const [mappableData, nextData] = takePartition(concurrency)(data);
+
+    // eslint-disable-next-line no-unused-vars
+    return promiseMap(
+        t,
+        {
+            concurrency,
+            results: results.concat(await Promise.all(mappableData.map(t))),
+        }
+    )(nextData);
 };
 
 export const axiosGetData = async url => (await axios.get(url)).data;
