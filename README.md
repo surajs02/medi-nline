@@ -24,7 +24,7 @@ npm start 50
 
 Example output:
 ```
-Fetching N=[50] products ...
+Fetching [50] products ...
 
 Got [50] products from [10] pages (in [1] fetch with concurrency [10])
 Showing [50] products:

@@ -82,7 +82,7 @@ export const mapEntries = ({ setValue = identity, setKey = (__, k) => k, keep = 
         {}
     );
 export const filterEntries = (p = tauto) => (o = {}) => mapEntries({ keep: p })(o);
-export const filterBlankEntries = (o = {}) => comp(delimitValues(), filterEntries(negate(isBlankStr)))(o);
+export const filterBlankEntries = (o = {}) => filterEntries(negate(isBlankStr))(o);
 export const grab = k => (o = {}) => o[k];
 export const reduceEntries = (t, init = []) => (o = {}) => keys(o).reduce((a, k) => t(o[k], k, a), init);
 export const delimitKeys = (delimiter = ',') => (o = {}) => reduceEntries((__, k, a) => a.concat(k))(o).join(delimiter);
@@ -104,6 +104,7 @@ export const isIntLike = v => {
     const _v = parseInt(v);
     return !isNaN(_v) && Number.isInteger(_v);
 };
+export const inc = v => v + 1;
 
 export const promiseMap = (t = () => Promise.resolve, { concurrency = Infinity, results = [] } = {}) => async (data = []) => {
     if (data.length < 1) return results;
@@ -119,14 +120,6 @@ export const promiseMap = (t = () => Promise.resolve, { concurrency = Infinity, 
         }
     )(nextData);
 };
-// // Applies promise `handler` to `data` until `p` returns false or `data` no longer changes between iterations.
-// export const promiseWhile = (handler = Promise.resolve, p = contra, dataT = identity) => async data => {
-//     const r = await handler(data);
-//     const nextData = dataT(data);
-
-//     // eslint-disable-next-line no-unused-vars
-//     return p(r) && nextData !== data ? await promiseWhile(handler, p, dataT)(nextData) : r;
-// };
 // TODO: Support concurrency.
 // Applies promise `handler` to `data` until `p` returns false or `data` no longer changes between iterations.
 export const promiseWhile = (handler = Promise.resolve, p = contra, dataT = identity) => async data => {
