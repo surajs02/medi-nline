@@ -35,7 +35,11 @@ export const isValueType = valueType => v => typeof v === valueType;
 
 export const isBlankStr = (s = '') => s.trim().length < 1;
 export const toLower = (s = '') => s.toLowerCase();
+export const mapWords = (t = identity, delimiter = ' ') => (s = '') => s.split(delimiter).map(t).join(delimiter);
 export const pluralize = (s = '', count = 1) => count === 1 ? s : `${s}s`;
+// Pluralizes words in `s` using a `wordMap` containing `word: count` entries (e.g.,
+// `pluralizeWords({ page: pages.length })('fetched page')` returns 'fetched pages').
+export const pluralizeWords = (wordMap = {}, t = pluralize) => (s = '') => mapWords(v => v in wordMap ? t(v, wordMap[v]) : v)(s);
 
 export const comp = (...fs) => (...x) => [...fs].reverse().reduce((a, v, i) => i > 0 ? v(a) : v(...a), x);
 export const map = (t = identity) => (a = []) => a.map(t);

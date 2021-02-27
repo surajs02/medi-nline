@@ -1,10 +1,11 @@
 import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
+import { pluralizeWords } from './util.mjs';
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
 import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filterBlankEntries,
     delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
-    throwIf, countIsNone, negate, skip, count, fillRe, pluralize, take, countIsAny,
+    throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny,
 } from './util.mjs';
 
 // Domain fuzzed for privacy.
@@ -83,7 +84,11 @@ ife(async () => {
     const productsCsv = productsToCsv(products);
 
     // Prefer side effects like logs outside pure functions.
-    console.info(`Got [${count(products)}] ${pluralize('product', count(products))} from [${pageNum}] ${pluralize('page', pageNum)} (in ${tConcurrentFetches} ${pluralize('fetch', tConcurrentFetches)} with concurrency ${concurrency})`); // TODO: Cleanup.
+    comp(console.info, pluralizeWords({
+        product: count(products),
+        page: pageNum,
+        fetch: tConcurrentFetches,
+    }))(`Got [${count(products)}] product from [${pageNum}] page (in [${tConcurrentFetches}] fetch with concurrency [${concurrency}])`);
     console.info(`Showing [${tProducts}] products:\n`);
     console.info(productsCsv);
 
