@@ -35,6 +35,7 @@ export const isValueType = valueType => v => typeof v === valueType;
 
 export const isBlankStr = (s = '') => s.trim().length < 1;
 export const toLower = (s = '') => s.toLowerCase();
+export const pluralize = (s = '', count = 1) => count === 1 ? s : `${s}s`;
 
 export const comp = (...fs) => (...x) => [...fs].reverse().reduce((a, v, i) => i > 0 ? v(a) : v(...a), x);
 export const map = (t = identity) => (a = []) => a.map(t);
@@ -64,6 +65,7 @@ export const countIsAny = (a = []) => a.length >= 1;
 export const countIsNone = (a = []) => a.length <= 0;
 export const difference = (a1 = [], t = identity) => (a2 = []) => a2.filter(v => !a1.includes(t(v)));
 export const filterPartition = (p = tauto) => (a = []) => [a.filter(p), a.filter(negate(p))];
+export const fillRe = (t = identity, count = 0) => (value, results = []) => count < 1 ? results : fillRe(t, --count)(t(value), results.concat(value));
 
 export const keys = (o = {}) => Object.keys(o);
 export const values = (o = {}) => Object.values(o);
@@ -113,6 +115,15 @@ export const promiseMap = (t = () => Promise.resolve, { concurrency = Infinity, 
         }
     )(nextData);
 };
+// // Applies promise `handler` to `data` until `p` returns false or `data` no longer changes between iterations.
+// export const promiseWhile = (handler = Promise.resolve, p = contra, dataT = identity) => async data => {
+//     const r = await handler(data);
+//     const nextData = dataT(data);
+
+//     // eslint-disable-next-line no-unused-vars
+//     return p(r) && nextData !== data ? await promiseWhile(handler, p, dataT)(nextData) : r;
+// };
+// TODO: Support concurrency.
 // Applies promise `handler` to `data` until `p` returns false or `data` no longer changes between iterations.
 export const promiseWhile = (handler = Promise.resolve, p = contra, dataT = identity) => async data => {
     const r = await handler(data);

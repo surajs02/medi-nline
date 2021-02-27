@@ -2,11 +2,13 @@ import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
-import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes, throwIf, countIsNone, negate, skip, count, promiseWhile } from './util.mjs';
+import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filterBlankEntries,
+    delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
+    throwIf, countIsNone, negate, skip, count, fillRe, pluralize, take, countIsAny,
+} from './util.mjs';
 
-const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`; // Domain fuzzed for privacy.
-// eslint-disable-next-line no-unused-vars
-const MAX_CONCURRENT_PAGES = 10;
+// Domain fuzzed for privacy.
+const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`;
 
 const getTotalProductsArg = () => {
     const throwIfMissingArg = throwIf(countIsNone, 'Missing arg'); // TODO: Add types.
@@ -28,20 +30,22 @@ const fetchPageProducts = async pageNum => {
 
     return $('.product-list-item').toArray().map(elToProduct);
 };
-const fetchProducts = async (tProducts, pageNum = 1) => [
-    await promiseWhile(
-        fetchPageProducts,
-        products => count(products) < tProducts,
-        _pageNum => {
-            pageNum = _pageNum; // Track current `pageNum` for return.
-            return ++_pageNum;
-        }
-    )(pageNum),
-    pageNum,
-];
+const fetchProducts = async (tProducts, pageNum = 1, tConcurrentFetches = 1) => {
+    const MAX_CONCURRENT_PAGES = 10;
+    const pageNums = fillRe(v => ++v, MAX_CONCURRENT_PAGES)(pageNum);
+    const tPageNums = count(pageNums);
+
+    const pages = await Promise.all(pageNums.map(fetchPageProducts));
+    const pageHasNeededProducts = v => v.length >= tProducts;
+    const targetPage = pages.find(pageHasNeededProducts);
+    return countIsAny(targetPage)
+        ? [take(tProducts)(targetPage), tPageNums, tConcurrentFetches, MAX_CONCURRENT_PAGES]
+        : fetchProducts(tProducts, tPageNums + 1, ++tConcurrentFetches, MAX_CONCURRENT_PAGES);
+};
 
 // DEPRECATED but kept for ref.
-// NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
+// NOTE: Functions are cleaner (although this function could be even cleaner) but could use
+// interface to support swapping parser (after adding TS).
 // const fetchProducts = async (tProducts, pageNum = 1) => {
 //     const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
 //     const getElByClass = containerEl => c => $(`.${c}`, containerEl);
@@ -73,13 +77,14 @@ const productsToCsv = products => {
 ife(async () => {
     const tProducts = getTotalProductsArg();
 
-    console.info(`Fetching N=[${tProducts}] products ...`);
+    console.info(`Fetching N=[${tProducts}] products ...\n`);
 
-    const [products, pageNum] = await fetchProducts(tProducts);
+    const [products, pageNum, tConcurrentFetches, concurrency] = await fetchProducts(tProducts);
     const productsCsv = productsToCsv(products);
 
     // Prefer side effects like logs outside pure functions.
-    console.info(`Got [${count(products)}] products from [${pageNum}] pages, showing [${tProducts}] products:\n`);
+    console.info(`Got [${count(products)}] ${pluralize('product', count(products))} from [${pageNum}] ${pluralize('page', pageNum)} (in ${tConcurrentFetches} ${pluralize('fetch', tConcurrentFetches)} with concurrency ${concurrency})`); // TODO: Cleanup.
+    console.info(`Showing [${tProducts}] products:\n`);
     console.info(productsCsv);
 
     const writeToFile = await readIsCliInputYes('\nSave products as csv?');
