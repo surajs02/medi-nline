@@ -5,7 +5,7 @@ import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
 import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes, throwIf, countIsNone, negate, skip, count } from './util.mjs';
 
 const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`; // Domain fuzzed for privacy.
-const MAX_PAGES = 10; // TODO: Concurrent page fetch.
+const MAX_CONCURRENT_PAGES = 10;
 
 const getTotalProductsArg = () => {
     const throwIfMissingArg = throwIf(countIsNone, 'Missing arg'); // TODO: Add types.
@@ -19,19 +19,35 @@ const productClasses = {
     price: 'product-list-price-span',
     retailPrice: 'rrp',
 };
-// NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
-const fetchProducts = async (tProducts, pageNum = 1) => {
+
+const fetchPageProducts = async pageNum => {
     const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     const getElByClass = containerEl => c => $(`.${c}`, containerEl);
     const getElText = el => el.text();
     const elToProduct = el => mapValues(comp(getElText, getElByClass(el)))(productClasses);
 
-    // NOTE: Avoid passing products in recursion since each pages are additive (i.e., appends new products)
-    const products = $('.product-list-item').toArray().map(elToProduct);
-    return pageNum < MAX_PAGES && count(products) < tProducts
-        ? await fetchProducts(tProducts, ++pageNum)
-        : [take(tProducts)(products), pageNum];
+    return $('.product-list-item').toArray().map(elToProduct);
 };
+
+const fetchProducts = async (tProducts, pageNum = 1) => {
+    const products = await fetchPageProducts(pageNum);
+    return count(products) < tProducts ? await fetchProducts(tProducts, ++pageNum) : [products, pageNum];
+};
+
+// DEPRECATED but kept for ref.
+// NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).
+// const fetchProducts = async (tProducts, pageNum = 1) => {
+//     const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
+//     const getElByClass = containerEl => c => $(`.${c}`, containerEl);
+//     const getElText = el => el.text();
+//     const elToProduct = el => mapValues(comp(getElText, getElByClass(el)))(productClasses);
+
+//     // NOTE: Avoid passing products in recursion since each pages are additive (i.e., appends new products).
+//     const products = $('.product-list-item').toArray().map(elToProduct);
+//     return count(products) < tProducts
+//         ? await fetchProducts(tProducts, ++pageNum)
+//         : [take(tProducts)(products), pageNum];
+// };
 
 const writeProductsCsv = async csv => {
     const buildPath = comp(pathJoin('build'), fileUrlToDirname)(`${import.meta.url}/..`);
