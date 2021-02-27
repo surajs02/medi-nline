@@ -1,11 +1,10 @@
 import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
-import { pluralizeWords } from './util.mjs';
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
 import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filterBlankEntries,
     delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
-    throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny,
+    throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny, pluralizeWords,
 } from './util.mjs';
 
 // Domain fuzzed for privacy.

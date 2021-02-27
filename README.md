@@ -26,7 +26,7 @@ Example output:
 ```
 Fetching N=[50] products ...
 
-Got [50] products from [10] pages (in 1 fetch with concurrency 10)
+Got [50] products from [10] pages (in [1] fetch with concurrency [10])
 Showing [50] products:
 
 name,price,retailPrice
@@ -137,6 +137,7 @@ Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/pack
 
 but could be:
 > Order within 6hrs 53mins start delivery today
+
 Or (if next day delivery is possible)
 > Order within 6hrs 53mins for next day delivery
 - very simple basket, could be improved:
