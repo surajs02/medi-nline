@@ -2,9 +2,10 @@ import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
 
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
-import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, take, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes, throwIf, countIsNone, negate, skip, count } from './util.mjs';
+import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filterBlankEntries, delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes, throwIf, countIsNone, negate, skip, count, promiseWhile } from './util.mjs';
 
 const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`; // Domain fuzzed for privacy.
+// eslint-disable-next-line no-unused-vars
 const MAX_CONCURRENT_PAGES = 10;
 
 const getTotalProductsArg = () => {
@@ -19,7 +20,6 @@ const productClasses = {
     price: 'product-list-price-span',
     retailPrice: 'rrp',
 };
-
 const fetchPageProducts = async pageNum => {
     const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     const getElByClass = containerEl => c => $(`.${c}`, containerEl);
@@ -28,11 +28,17 @@ const fetchPageProducts = async pageNum => {
 
     return $('.product-list-item').toArray().map(elToProduct);
 };
-
-const fetchProducts = async (tProducts, pageNum = 1) => {
-    const products = await fetchPageProducts(pageNum);
-    return count(products) < tProducts ? await fetchProducts(tProducts, ++pageNum) : [products, pageNum];
-};
+const fetchProducts = async (tProducts, pageNum = 1) => [
+    await promiseWhile(
+        fetchPageProducts,
+        products => count(products) < tProducts,
+        _pageNum => {
+            pageNum = _pageNum; // Track current `pageNum` for return.
+            return ++_pageNum;
+        }
+    )(pageNum),
+    pageNum,
+];
 
 // DEPRECATED but kept for ref.
 // NOTE: Functions are cleaner (although this function could be even cleaner) but could use interface to support swapping parser (after adding TS).

@@ -113,6 +113,14 @@ export const promiseMap = (t = () => Promise.resolve, { concurrency = Infinity, 
         }
     )(nextData);
 };
+// Applies promise `handler` to `data` until `p` returns false or `data` no longer changes between iterations.
+export const promiseWhile = (handler = Promise.resolve, p = contra, dataT = identity) => async data => {
+    const r = await handler(data);
+    const nextData = dataT(data);
+
+    // eslint-disable-next-line no-unused-vars
+    return p(r) && nextData !== data ? await promiseWhile(handler, p, dataT)(nextData) : r;
+};
 
 export const axiosGetData = async url => (await axios.get(url)).data;
 
