@@ -3,7 +3,7 @@ import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
 // Prefer `.ts` since ts introduced.
 import {
     comp, first, isIntLike, axiosGetData, mapValues, map, join, filterBlankEntries,
-    delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
+    delimitKeys, pathJoin, fileWrite, ensureDirExists, queue, readIsCliInputYes,
     throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny, pluralizeWords, inc,
     delimitValues,
     noop,
@@ -26,8 +26,8 @@ const getTotalProductsArg = (): number => {
 const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
     const $: cheerio.Root = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     const getElByClass = (containerEl: cheerio.Element) => (c: string): cheerio.Cheerio => $(`.${c}`, containerEl);
-    const getElText = (el: cheerio.Cheerio) => el.text();
-    const elToProduct = (el: cheerio.Element) => mapValues(comp(getElText, getElByClass(el)))(PRODUCT_CLASSES) as Product;
+    const getElText = (el: cheerio.Cheerio): string => el.text();
+    const elToProduct = (el: cheerio.Element): Product => mapValues(comp(getElText, getElByClass(el)))(PRODUCT_CLASSES) as Product;
 
     return $('.product-list-item').toArray().map(elToProduct);
 };
@@ -35,7 +35,7 @@ const fetchProducts = async (tProducts: number, pageNum = 1, tConcurrentFetches 
     const pageNums: number[] = fillRe(inc, MAX_CONCURRENT_PAGES)(pageNum);
     const tPageNums: number = count(pageNums);
 
-    const pages = await Promise.all(pageNums.map(fetchPageProducts));
+    const pages: Product[][] = await Promise.all(pageNums.map(fetchPageProducts));
     const pageHasNeededProducts = (v: Product[]): boolean => v.length >= tProducts;
     const targetPage: Product[] = pages.find(pageHasNeededProducts) || [];
     return countIsAny(targetPage)
@@ -44,7 +44,7 @@ const fetchProducts = async (tProducts: number, pageNum = 1, tConcurrentFetches 
 };
 
 const productsToCsv = (products: Product[]): string => {
-    const header = comp(delimitKeys(), first)(products);
+    const header: string = comp(delimitKeys(), first)(products);
 
     return comp(
         join('\n'),

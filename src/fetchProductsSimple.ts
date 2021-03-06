@@ -32,10 +32,10 @@ const fetchProducts = async (tProducts: number = 50, pageNum = 1): Promise<[Prod
     let tConcurrentFetches = 1;
     let targetPage: Product[] = [];
     while (targetPage.length < tProducts) {
-        const nums = [...Array(MAX_CONCURRENT_PAGES).keys()];
-        const pageNums = nums.map((v: number): number => v + pageNum);
-        const fetches = pageNums.map(fetchPageProducts);
-        const pages = await Promise.all(fetches);
+        const nums: number[] = [...Array(MAX_CONCURRENT_PAGES).keys()];
+        const pageNums: number[] = nums.map((v: number): number => v + pageNum);
+        const fetches: Promise<Product[]>[] = pageNums.map(fetchPageProducts);
+        const pages: (Product[])[] = await Promise.all(fetches);
         const pageHasNeededProducts = (v: Product[]): boolean => v.length >= tProducts;
         targetPage = pages.find(pageHasNeededProducts) || [];
 
@@ -46,7 +46,7 @@ const fetchProducts = async (tProducts: number = 50, pageNum = 1): Promise<[Prod
     return [targetPage.slice(0, tProducts), pageNum, tConcurrentFetches, MAX_CONCURRENT_PAGES];
 };
 
-const productsToCsv = (products: Product[]) => {
+const productsToCsv = (products: Product[]): string => {
     // NOTE: Using `IJson` since interfaces seem to lack typed indexes hence tsc won't
     // find overlap between `Product` (i.e., only has string fields) & object type with
     // string fields (cf. https://github.com/microsoft/TypeScript/issues/15300).
@@ -57,19 +57,19 @@ const productsToCsv = (products: Product[]) => {
         },
         {} as T
     );
-    const productCsvs = products.map((product: Product) => {
-        const cleanProduct = removeBlankValues(product);
+    const productCsvs: string[] = products.map((product: Product): string => {
+        const cleanProduct: Product = removeBlankValues(product);
         return Object.values(cleanProduct).join(',');
     });
 
-    const header = Object.keys(products[0]).join(',');
+    const header: string = Object.keys(products[0]).join(',');
     productCsvs.unshift(header);
 
     return productCsvs.join('\n');
 };
 const writeProductsCsv = async (csv: string): Promise<string> => {
-    const buildPath = path.join(dirname(`${__filename}/..`), 'build');
-    const productsPath = path.join(buildPath, 'products.csv');
+    const buildPath: string = path.join(dirname(`${__dirname}/..`), 'build');
+    const productsPath: string = path.join(buildPath, 'products.csv');
 
     await ensureDirExists(buildPath);
     await fileWrite(productsPath, csv);
@@ -84,7 +84,7 @@ const main = async () => {
 
     const [products, pageNum, tConcurrentFetches, concurrency] = await fetchProducts(tProducts);
     const tFetchedProducts: number = products.length;
-    const productsCsv = productsToCsv(products);
+    const productsCsv: string = productsToCsv(products);
 
     // Prefer side effects like logs outside pure functions.
     console.info(`Got [${tFetchedProducts}]  ${pluralize('product', tFetchedProducts)} from [${pageNum}] ${pluralize('page', pageNum)} (in [${tConcurrentFetches}] ${pluralize('fetch', tConcurrentFetches)} with concurrency [${concurrency}])`);
