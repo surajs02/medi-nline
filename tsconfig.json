@@ -11,7 +11,7 @@
 		"strict": true, // Enable all strict type-checking options.
 		"allowSyntheticDefaultImports": true,
 		"noImplicitAny": true,
-		"inlineSources": true, // One file.
+		"inlineSources": true, // TODO: One file.
 		"removeComments": true,
 	},
 	"include": [
