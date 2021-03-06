@@ -85,6 +85,17 @@ Save products as csv? (y or N): n
 Did not write products
 ```
 
+## Available `npm` scripts
+
+|Script|Info|
+|-|-|
+|`build`|Compiles|
+|`buildDev`|Compiles with hot reload (n.b., doesn't accept cli input hence `N` defaults to `50`)|
+|`start <N>`|Compiles & runs `fetchProducts` (i.e., main logic for fetching `N` products)|
+|`startDev`|Hot reload version of `start <N>`|
+|`simple <N>`|Simpler imperative version of `start <N>`|
+|`simpleDev`|Hot reload version of `simple <N>`|
+
 ## Contributing
 
 Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/package/eslint-config-jsx).
