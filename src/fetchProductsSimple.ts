@@ -7,7 +7,7 @@ import { axiosGetData, fileWrite, ensureDirExists, readIsCliInputYes, pluralize 
 import { PRODUCTS_URL, MAX_CONCURRENT_PAGES } from './constants';
 
 import { productClasses, Product } from './fetchProducts';
-import { EnsureTypedIndexes, IJson } from './types';
+import { IJson } from './types';
 
 // This file (`fetchProdcutssimpe.mjs`) attempts to replicate the functionality of the
 // original functional implementation (`fetchProducts.mjs`) whilst using less utilities and a
@@ -78,8 +78,7 @@ const writeProductsCsv = async (csv: string): Promise<string> => {
     return productsPath;
 };
 
-
-const main = (async () => {
+const main = async () => {
     const tProducts: number = getTotalProductsArg();
 
     console.info(`Fetching [${tProducts}] products ...\n`);
@@ -97,5 +96,10 @@ const main = (async () => {
     return writeToFile
         ? console.info(`Wrote products csv to [${await writeProductsCsv(productsCsv)}]`)
         : console.info('Did not write products');
-});
-main();
+};
+
+try {
+    main();
+} catch (e) {
+    console.error('Main failed', e);
+}

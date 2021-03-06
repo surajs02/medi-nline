@@ -10,8 +10,9 @@
     "build": "tsc",
     "buildDev": "tsc -w",
     "start": "npm run build && node ./dist/fetchProducts.js",
-    "startDev": "concurrently --kill-others \"tsc -w\" \"nodemon ./dist/fetchProducts.js 50\"",
-    "simple": "npm run build && node ./dist/fetchProductsSimple.js"
+    "startDev": "concurrently --kill-others \"npm run buildDev\" \"nodemon ./dist/fetchProducts.js 50\"",
+    "simple": "npm run build && node ./dist/fetchProductsSimple.js",
+    "simpleDev": "concurrently --kill-others \"npm run buildDev\" \"nodemon ./dist/fetchProductsSimple.js 50\""
   },
   "repository": {
     "type": "git",
