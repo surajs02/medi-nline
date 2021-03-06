@@ -105,7 +105,7 @@ export const filterEntries = (p = tauto) => (o = {}) => mapEntries({ keep: p })(
 export const filterBlankEntries = (o = {}) => filterEntries(negate(isBlankStr))(o);
 export const grab = (k: string) => <T>(o: Record<string, T> = {}): T => o[k];
 export const delimitKeys = (delimiter = ',') => <T>(o: Record<string, T> = {}) => Object.keys(o).join(delimiter);
-export const delimitValues = (delimiter = ',') => <T>(o: Record<string, T> = {}) => Object.keys(o).join(delimiter);
+export const delimitValues = (delimiter = ',') => <T>(o: Record<string, T> = {}) => Object.values(o).join(delimiter); // TODO: String safety.
 
 // Prefer `ife` aka IIFE to reduce parentheses.
 export const ife = (f: Function = noop, ...a: []) => (() => f(...a))();

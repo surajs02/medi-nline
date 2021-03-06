@@ -5,7 +5,6 @@ import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filter
     delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
     throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny, pluralizeWords, inc,
     delimitValues,
-    tryOrD,
     noop,
     tryOrDAsync,
 } from './util';
@@ -54,6 +53,7 @@ const fetchProducts = async (tProducts: number, pageNum = 1, tConcurrentFetches 
 
 const productsToCsv = (products: Product[]): string => {
     const header = comp(delimitKeys(), first)(products);
+
     return comp(
         join('\n'),
         queue(header),
