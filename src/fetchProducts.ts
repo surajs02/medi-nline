@@ -16,7 +16,7 @@ import { Product } from './types';
 
 sourceMap.install();
 
-const getTotalProductsArg = () => {
+const getTotalProductsArg = (): number => {
     const throwIfMissingArg = throwIf(countIsNone, 'Missing arg');
     const throwIfInvalidNumber = throwIf(negate(isIntLike), 'N must be an natural number');
     const getValidTotalProductsArg = comp(throwIfInvalidNumber, first, throwIfMissingArg, skip(2));
@@ -32,8 +32,8 @@ const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
     return $('.product-list-item').toArray().map(elToProduct);
 };
 const fetchProducts = async (tProducts: number, pageNum = 1, tConcurrentFetches = 1): Promise<[Product[], number, number, number]> => {
-    const pageNums = fillRe(inc, MAX_CONCURRENT_PAGES)(pageNum);
-    const tPageNums = count(pageNums);
+    const pageNums: number[] = fillRe(inc, MAX_CONCURRENT_PAGES)(pageNum);
+    const tPageNums: number = count(pageNums);
 
     const pages = await Promise.all(pageNums.map(fetchPageProducts));
     const pageHasNeededProducts = (v: Product[]): boolean => v.length >= tProducts;
@@ -52,9 +52,9 @@ const productsToCsv = (products: Product[]): string => {
         map(comp(delimitValues(), filterBlankEntries))
     )(products) as unknown as string;
 };
-const writeProductsCsv = async (csv: string) => {
-    const buildPath = comp(pathJoin('build'), fileUrlToDirname)(`${__filename}`) as string;
-    const productsPath = pathJoin('products.csv')(buildPath);
+const writeProductsCsv = async (csv: string): Promise<string> => {
+    const buildPath: string = pathJoin('build')(`${__dirname}`);
+    const productsPath: string = pathJoin('products.csv')(buildPath);
 
     await ensureDirExists(buildPath);
     await fileWrite(productsPath, csv);
