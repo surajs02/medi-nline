@@ -9,9 +9,10 @@ import {
     noop,
     tryOrDAsync,
 } from './util';
-import { PRODUCTS_URL, MAX_CONCURRENT_PAGES } from './constants';
+import { PRODUCTS_URL, MAX_CONCURRENT_PAGES, PRODUCT_CLASSES } from './constants';
 
 import sourceMap from 'source-map-support';
+import { Product } from './types';
 
 sourceMap.install();
 
@@ -22,21 +23,11 @@ const getTotalProductsArg = () => {
     return getValidTotalProductsArg(process.argv) as number;
 };
 
-export interface Product {
-    name: string;
-    price: string;
-    retailPrice?: string;
-}
-export const productClasses: Record<string, string> = {
-    name: 'product-list-link-text',
-    price: 'product-list-price-span',
-    retailPrice: 'rrp',
-};
 const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
     const $: cheerio.Root = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     const getElByClass = (containerEl: cheerio.Element) => (c: string): cheerio.Cheerio => $(`.${c}`, containerEl);
     const getElText = (el: cheerio.Cheerio) => el.text();
-    const elToProduct = (el: cheerio.Element) => mapValues(comp(getElText, getElByClass(el)))(productClasses) as Product;
+    const elToProduct = (el: cheerio.Element) => mapValues(comp(getElText, getElByClass(el)))(PRODUCT_CLASSES) as Product;
 
     return $('.product-list-item').toArray().map(elToProduct);
 };

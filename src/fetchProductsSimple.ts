@@ -4,10 +4,9 @@ import path, { dirname } from 'path';
 // Prefer fully quantified extensions.
 // NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
 import { axiosGetData, fileWrite, ensureDirExists, readIsCliInputYes, pluralize } from './util';
-import { PRODUCTS_URL, MAX_CONCURRENT_PAGES } from './constants';
+import { PRODUCTS_URL, MAX_CONCURRENT_PAGES, PRODUCT_CLASSES } from './constants';
 
-import { productClasses, Product } from './fetchProducts';
-import { IJson } from './types';
+import { IJson, Product } from './types';
 
 // This file (`fetchProdcutssimpe.mjs`) attempts to replicate the functionality of the
 // original functional implementation (`fetchProducts.mjs`) whilst using less utilities and a
@@ -23,8 +22,8 @@ const getTotalProductsArg = (): number => {
 const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
     const $: cheerio.Root = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
     const elToProduct = (el: cheerio.Element) =>
-        Object.keys(productClasses).reduce((product: Product, k: string) =>
-            ({ ...product, [k]: $(`.${productClasses[k]}`, el).text() })
+        Object.keys(PRODUCT_CLASSES).reduce((product: Product, k: string) =>
+            ({ ...product, [k]: $(`.${PRODUCT_CLASSES[k]}`, el).text() })
         , {} as Product);
 
     return $('.product-list-item').toArray().map(elToProduct);
