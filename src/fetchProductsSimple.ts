@@ -29,7 +29,7 @@ const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
 
     return $('.product-list-item').toArray().map(elToProduct);
 };
-const fetchProducts = async (tProducts: number = 50, pageNum = 1) => {
+const fetchProducts = async (tProducts: number = 50, pageNum = 1): Promise<[Product[], number, number, number]> => {
     let tConcurrentFetches = 1;
     let targetPage: Product[] = [];
     while (targetPage.length < tProducts) {
@@ -79,23 +79,23 @@ const writeProductsCsv = async (csv: string): Promise<string> => {
 };
 
 
-// const main = (async () => {
-//     const tProducts: number = getTotalProductsArg();
+const main = (async () => {
+    const tProducts: number = getTotalProductsArg();
 
-//     console.info(`Fetching [${tProducts}] products ...\n`);
+    console.info(`Fetching [${tProducts}] products ...\n`);
 
-//     const [products, pageNum, tConcurrentFetches, concurrency] = await fetchProducts(tProducts);
-//     const tFetchedProducts: number = products.length;
-//     const productsCsv = productsToCsv(products);
+    const [products, pageNum, tConcurrentFetches, concurrency] = await fetchProducts(tProducts);
+    const tFetchedProducts: number = products.length;
+    const productsCsv = productsToCsv(products);
 
-//     // Prefer side effects like logs outside pure functions.
-//     console.info(`Got [${tFetchedProducts}]  ${pluralize('product', tFetchedProducts)} from [${pageNum}] ${pluralize('page', pageNum)} (in [${tConcurrentFetches}] ${pluralize('fetch', tConcurrentFetches)} with concurrency [${concurrency}])`);
-//     console.info(`Showing [${tProducts}] products:\n`);
-//     console.info(productsCsv);
+    // Prefer side effects like logs outside pure functions.
+    console.info(`Got [${tFetchedProducts}]  ${pluralize('product', tFetchedProducts)} from [${pageNum}] ${pluralize('page', pageNum)} (in [${tConcurrentFetches}] ${pluralize('fetch', tConcurrentFetches)} with concurrency [${concurrency}])`);
+    console.info(`Showing [${tProducts}] products:\n`);
+    console.info(productsCsv);
 
-//     const writeToFile: boolean = await readIsCliInputYes('\nSave products as csv?');
-//     return writeToFile
-//         ? console.info(`Wrote products csv to [${await writeProductsCsv(productsCsv)}]`)
-//         : console.info('Did not write products');
-// });
-// main();
+    const writeToFile: boolean = await readIsCliInputYes('\nSave products as csv?');
+    return writeToFile
+        ? console.info(`Wrote products csv to [${await writeProductsCsv(productsCsv)}]`)
+        : console.info('Did not write products');
+});
+main();
