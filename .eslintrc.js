@@ -3,4 +3,5 @@ module.exports = {
     env: { mocha: true },
     root: true,
     parser: '@babel/eslint-parser',
+    ignorePatterns: ['**/node_modules/*', '**/dist/*'],
 };

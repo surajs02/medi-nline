@@ -1,60 +1,60 @@
 import cheerio from 'cheerio'; // SOMEDAY: Try other parsers.
-import { delimitValues } from './util.mjs';
-import { inc } from './util.mjs';
 
-// Prefer fully quantified extensions.
-// NOTE: `.mjs`=ES (requires Node 13+) & `.js`=CommonJs.
+// Prefer `.ts` since ts introduced.
 import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filterBlankEntries,
     delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
-    throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny, pluralizeWords,
-} from './util.mjs';
-
-// Domain fuzzed for privacy.
-const PRODUCTS_URL = `https://www.medi${'no'}.com/popular-products?up-to-page=`;
+    throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny, pluralizeWords, inc,
+    delimitValues,
+} from './util';
+import { PRODUCTS_URL, MAX_CONCURRENT_PAGES } from './constants';
 
 const getTotalProductsArg = () => {
-    const throwIfMissingArg = throwIf(countIsNone, 'Missing arg'); // TODO: Add types.
+    const throwIfMissingArg = throwIf(countIsNone, 'Missing arg');
     const throwIfInvalidNumber = throwIf(negate(isIntLike), 'N must be an natural number');
     const getValidTotalProductsArg = comp(throwIfInvalidNumber, first, throwIfMissingArg, skip(2));
-    return getValidTotalProductsArg(process.argv);
+    return getValidTotalProductsArg(process.argv) as number;
 };
 
-const productClasses = {
+export interface Product {
+    name: string;
+    price: string;
+    retailPrice?: string;
+}
+export const productClasses: Record<string, string> = {
     name: 'product-list-link-text',
     price: 'product-list-price-span',
     retailPrice: 'rrp',
 };
-const fetchPageProducts = async pageNum => {
-    const $ = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
-    const getElByClass = containerEl => c => $(`.${c}`, containerEl);
-    const getElText = el => el.text();
-    const elToProduct = el => mapValues(comp(getElText, getElByClass(el)))(productClasses);
+const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
+    const $: cheerio.Root = cheerio.load(await axiosGetData(PRODUCTS_URL + pageNum));
+    const getElByClass = (containerEl: cheerio.Element) => (c: string): cheerio.Cheerio => $(`.${c}`, containerEl);
+    const getElText = (el: cheerio.Cheerio) => el.text();
+    const elToProduct = (el: cheerio.Element) => mapValues(comp(getElText, getElByClass(el)))(productClasses) as Product;
 
     return $('.product-list-item').toArray().map(elToProduct);
 };
-const fetchProducts = async (tProducts, pageNum = 1, tConcurrentFetches = 1) => {
-    const MAX_CONCURRENT_PAGES = 10;
+const fetchProducts = async (tProducts: number, pageNum = 1, tConcurrentFetches = 1): Promise<[Product[], number, number, number]> => {
     const pageNums = fillRe(inc, MAX_CONCURRENT_PAGES)(pageNum);
     const tPageNums = count(pageNums);
 
     const pages = await Promise.all(pageNums.map(fetchPageProducts));
-    const pageHasNeededProducts = v => v.length >= tProducts;
-    const targetPage = pages.find(pageHasNeededProducts);
+    const pageHasNeededProducts = (v: Product[]): boolean => v.length >= tProducts;
+    const targetPage: Product[] = pages.find(pageHasNeededProducts) || [];
     return countIsAny(targetPage)
         ? [take(tProducts)(targetPage), tPageNums, tConcurrentFetches, MAX_CONCURRENT_PAGES]
-        : fetchProducts(tProducts, inc(tPageNums), inc(tConcurrentFetches), MAX_CONCURRENT_PAGES);
+        : await fetchProducts(tProducts, inc(tPageNums), inc(tConcurrentFetches));
 };
 
-const productsToCsv = products => {
+const productsToCsv = (products: Product[]): string => {
     const header = comp(delimitKeys(), first)(products);
     return comp(
         join('\n'),
-        queue(header), 
+        queue(header),
         map(comp(delimitValues(), filterBlankEntries))
-    )(products);
+    )(products) as unknown as string;
 };
-const writeProductsCsv = async csv => {
-    const buildPath = comp(pathJoin('build'), fileUrlToDirname)(`${import.meta.url}/..`);
+const writeProductsCsv = async (csv: string) => {
+    const buildPath = comp(pathJoin('build'), fileUrlToDirname)(`${__filename}`) as string;
     const productsPath = pathJoin('products.csv')(buildPath);
 
     await ensureDirExists(buildPath);
@@ -64,13 +64,13 @@ const writeProductsCsv = async csv => {
 };
 
 ife(async () => {
-    const tProducts = getTotalProductsArg();
+    const tProducts: number = getTotalProductsArg();
 
     console.info(`Fetching [${tProducts}] products ...\n`);
 
     const [products, pageNum, tConcurrentFetches, concurrency] = await fetchProducts(tProducts);
-    const tFetchedProducts = count(products);
-    const productsCsv = productsToCsv(products);
+    const tFetchedProducts: number = count(products);
+    const productsCsv: string = productsToCsv(products);
 
     // Prefer side effects like logs outside pure functions.
     comp(console.info, pluralizeWords({
@@ -81,7 +81,7 @@ ife(async () => {
     console.info(`Showing [${tProducts}] products:\n`);
     console.info(productsCsv);
 
-    const writeToFile = await readIsCliInputYes('\nSave products as csv?');
+    const writeToFile: boolean = await readIsCliInputYes('\nSave products as csv?');
     // Prefer returning in functions.
     return console.info(
         writeToFile
