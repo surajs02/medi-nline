@@ -114,6 +114,23 @@ export const throwIf = <T>(p: (v: T) => boolean  = tauto, m = 'No error message'
         throw new Error(m);
     })
     : v;
+export const tryOrD = (d: Function, { isVerbose = false }: { isVerbose?: boolean } = {}) => (f: Function) => {
+    try {
+        return f();
+    } catch (e) {
+        if (isVerbose) console.warn(`Tried [${f.name}] but failed, defaulting to [${d.name}]\n`, e);
+
+        return d();
+    }
+};
+export const tryOrDAsync = (d: Function, { isVerbose = false }: { isVerbose?: boolean } = {}) => async (f: Function) => {
+    try {
+        await f();
+    } catch (e) {
+        if (isVerbose) console.warn(`Tried [${f.name}] but failed, defaulting to [${d.name}]\n`, e);
+        return d();
+    }
+};
 export const log = (
     m: string,
     { logger = console.debug, t = identity }: { logger?: (m: string, ...a: any[]) => any, t?: (v: any) => any } = {}

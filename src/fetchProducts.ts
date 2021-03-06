@@ -5,6 +5,9 @@ import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filter
     delimitKeys, pathJoin, fileUrlToDirname, fileWrite, ensureDirExists, queue, readIsCliInputYes,
     throwIf, countIsNone, negate, skip, count, fillRe, take, countIsAny, pluralizeWords, inc,
     delimitValues,
+    tryOrD,
+    noop,
+    tryOrDAsync,
 } from './util';
 import { PRODUCTS_URL, MAX_CONCURRENT_PAGES } from './constants';
 
@@ -63,7 +66,7 @@ const writeProductsCsv = async (csv: string) => {
     return productsPath;
 };
 
-ife(async () => {
+const main = async () => {
     const tProducts: number = getTotalProductsArg();
 
     console.info(`Fetching [${tProducts}] products ...\n`);
@@ -88,4 +91,6 @@ ife(async () => {
             ? `Wrote products csv to [${await writeProductsCsv(productsCsv)}]`
             : 'Did not write products'
     );
-});
+};
+tryOrDAsync(noop, { isVerbose: true })(main)
+
