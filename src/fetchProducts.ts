@@ -11,6 +11,10 @@ import { comp, first, isIntLike, ife, axiosGetData, mapValues, map, join, filter
 } from './util';
 import { PRODUCTS_URL, MAX_CONCURRENT_PAGES } from './constants';
 
+import sourceMap from 'source-map-support';
+
+sourceMap.install();
+
 const getTotalProductsArg = () => {
     const throwIfMissingArg = throwIf(countIsNone, 'Missing arg');
     const throwIfInvalidNumber = throwIf(negate(isIntLike), 'N must be an natural number');
