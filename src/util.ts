@@ -8,6 +8,7 @@ import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import readline from 'readline';
+import { FunctionAny, Last, Reverse } from './types';
 
 export const identity = <T>(v: T, ...a: any[]): T => v;
 export const tauto = (): boolean => true;
@@ -44,11 +45,17 @@ export const pluralize = (s = '', count = 1): string => count === 1 ? s : `${s}s
 // `pluralizeWords({ page: pages.length })('fetched page')` returns 'fetched pages').
 export const pluralizeWords = (wordMap: Record<string, number> = {}, t: (char: string, count: number) => string = pluralize) => (s = '') => mapWords(v => v in wordMap ? t(v, wordMap[v]) : v)(s);
 
-export const comp = (...fs: ((...args: any[]) => any)[]) => (...x: any[]) => {
-    const reversed = [...fs].reverse()
-    const end = reversed[reversed.length - 1];
-    return reversed.reduce((a, v, i) => i > 0 ? v(a) : v(...a), x) as ReturnType<typeof end>; // TODO: `end` is `any` - find a way to get last function's type.
-}
+export const comp =
+    <Fs extends FunctionAny[]>(...fs: Fs) =>
+    (x: any) => {
+        // TODO: Add typing to each function args/return for chain typing rather than final type?
+        type _Reversed = Reverse<Fs>;
+        type _Last = Last<_Reversed>;
+        type _ReturnType = ReturnType<_Last extends FunctionAny ? _Last : any>;
+
+        return [...fs].reverse().reduce( (a, v) => v(a), x) as _ReturnType;
+    }
+
 export const map = <T, U>(t: (v: T, i: number) => U) => (a: T[] = []): U[] => a.map(t);
 export const filter = <T>(p: (v: T, i: number) => boolean = tauto) => (a: T[] = []): T[] => a.filter(p);
 export const first = <T>(a: T[] = []): T => a[0];
