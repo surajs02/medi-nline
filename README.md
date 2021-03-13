@@ -24,63 +24,77 @@ npm start 50
 
 Example output:
 ```
-Fetching N=[50] products ...
-Got [96] products from [2] pages, showing [50] products:
+Fetching [50] products ...
+
+Got [50] products from [10] pages (in [1] fetch with concurrency [10])
+Showing [50] products:
 
 name,price,retailPrice
 Selsun Dandruff Treatment Shampoo 2.5% 100ml,£3.29
-Bimuno Daily 30 Sachets,£9.89,£11.99
 HuxD3 20,000 IU 30 Vegetarian Capsules,£6.79
-Nurofen Plus 32 Tablets,£8.99
 Viscotears Liquid Gel Eye Drops 10g,£2.79
-Selsun Dandruff Shampoo 2.5% 150ml,£5.59
-Johnson's Face Care Daily Essentials Gentle Make-Up Removal Pads 30 Pads,£2.99
+Nurofen Plus 32 Tablets,£8.99
 BetterYou Dlux+ Vitamin D + K2 Oral Spray 12ml,£5.91
-Bristol Co-codamol 8/500 mg 32 Tablets,£2.09
+Selsun Dandruff Shampoo 2.5% 150ml,£5.59
 Salactol Wart Paint 10ml,£2.89,£3.10
-KN95 Respiratory Protective Mask 1s,£2.39
 Always Maxi Classic Night Pads 8s,£0.99,£1.95
+Johnson's Face Care Daily Essentials Gentle Make-Up Removal Pads 30 Pads,£2.99
+BetterYou Dlux 3000 Vitamin D Oral Spray 15ml,£5.59
+Bristol Co-codamol 8/500 mg 32 Tablets,£2.09
 Dermol Lotion 500ml,£9.49,£11.97
-Celluvisc Eye Drops 1% w/v Unite Dose 30s',£4.29
-Adcal-D3 Fruit flavoured 56 Chewable Tablets,£5.99
-Oral-B Super Floss Pre-Cut 50s,£1.79
+Bimuno Daily 30 Sachets,£9.99,£11.99
 Care Hydrogen Peroxide Solution 6% 20 vols 200ml,£1.49
+Adcal-D3 Fruit flavoured 56 Chewable Tablets,£5.99
+KN95 Respiratory Protective Mask 1s,£2.39
+Celluvisc Eye Drops 1% w/v Unite Dose 30s',£4.29
 Colgate Maximum Cavity Protection Fresh Mint Toothpaste 75ml,£1.49
-The Goat Soap With Manuka Honey 100g,£2.59,£3.50
 Golden Eye Ointment 5g,£6.69
-Kamill Hand & Nail Cream Intensive 100ml,£1.49,£4.99
-Johnson's Face Care Daily Essentials Hydrating 24 Hour Day Cream SPF 15 50ml,£2.39
-Kotex Maxi Super 14 Pads,£1.15
-Always Classic Maxi Wings 9s,£0.99
-Adcal -D3 750mg/200 I.U 112 Caplets,£4.99
-Solgar Niacin (Vitamin B3) 500 mg 100 Capsules,£8.49,£11.75
-OptiBac Probiotics For women 30 Capsules,£15.99,£18.99
 Gaviscon Advance Peppermint 500ml,£7.99
-Solgar Vitamin D3 2500 IU (62.5µg) Liquid 59ml,£9.99,£12.50
-Natures Aid Serrapeptase 250,000iu 60 Tablets,£22.99,£29.95
-Bristol Paracetamol 500mg 32 Capsules,£1.59
-Halls Sugar Free Cherry Menthol Action 32g,£0.69
-Eucerin Dry Skin Intensive Lotion 250ml,£11.99,£13.16
-Ferrograd-C Prolonged Released 30 Tablets,£4.99
-Arm & Hammer Extra White Care Baking Soda Toothpaste 125g,£1.29
-Solgar Zinc 50mg 100 Tablets,£8.19,£10.50
-BetterYou Dlux4000 Vitamin D Oral Spray 15ml,£5.91
+Always Classic Maxi Wings 9s,£0.99
+Kamill Hand & Nail Cream Intensive 100ml,£1.49,£4.99
 Numark Paracetamol 500mg 32 Caplets,£0.99,£1.20
-Nair Sensitive Hair Removal Cream 80ml,£1.09
-Bristol Aspirin 75mg Gastro-Resistant  28 Tablets,£1.59
-Celluvisc Eye Drops 0.5% x/v Unite Dose 30x0.4ml,£6.79
-Gaviscon Advance Aniseed Suspension 500ml,£7.99
-Nytol One-A-Night 50mg Tablets 20 Tablets,£6.69,£6.89
-Kotex Maxi Night-Time  10 pads,£1.39
-Panadol Advance 16 Tablets,£1.49,£1.65
-Panadol Extra Advanced 32 Tablets,£3.99
-Care Hydrogen Peroxide Solution 9% 30 vols 200ml,£2.19
-Golden Eye Conjunctivitis Ointment 4g,£6.69
-Solgar Vitamin D3 400 IU (10 μg) 100 softgels,£5.99,£7.75
+OptiBac Probiotics For women 30 Capsules,£15.19,£18.99
+Johnson's Face Care Daily Essentials Hydrating 24 Hour Day Cream SPF 15 50ml,£2.69
+The Goat Soap With Manuka Honey 100g,£2.59,£3.50
 Solpadeine Max 30 Tablets,£7.49
+Natures Aid Serrapeptase 250,000iu 60 Tablets,£22.99,£29.95
+Solgar Niacin (Vitamin B3) 500 mg 100 Capsules,£9.19,£11.75
+Ferrograd-C Prolonged Released 30 Tablets,£4.99
+Adcal -D3 750mg/200 I.U 112 Caplets,£4.99
+BetterYou Dlux4000 Vitamin D Oral Spray 15ml,£5.91
+Nair Sensitive Hair Removal Cream 80ml,£1.09
+Bristol Paracetamol 500mg 32 Capsules,£1.59
+Sanex Men Active Control 48H Anti-Perspirant 250ml,£2.49
+OptiBac Probiotics For Women 90 Capsules,£39.99,£49.99
+Eucerin Dry Skin Intensive Lotion 250ml,£10.99,£13.16
+Care Hydrogen Peroxide Solution 9% 30 vols 200ml,£1.25
+Gaviscon Advance Aniseed Suspension 500ml,£7.99
+Bristol Aspirin 75mg Gastro-Resistant  28 Tablets,£1.59
+Solgar Vitamin D3 2500 IU (62.5µg) Liquid 59ml,£9.99,£12.50
+Bee Health Propolis Liquid 30ml,£3.59,£4.98
+Care Hydrogen Peroxide solution 3% 10 vols 200ml,£1.49
+Kotex Maxi Super 14 Pads,£1.15
+Celluvisc Eye Drops 0.5% x/v Unite Dose 30x0.4ml,£6.79
+Arm & Hammer Extra White Care Baking Soda Toothpaste 125g,£1.29
+Doublebase Gel Pump 500g,£9.09,£11.54
+Panadol Advance 16 Tablets,£1.49,£1.65
+Nytol One-A-Night 50mg Tablets 20 Tablets,£6.69,£6.89
+Solpadeine Max Soluble Tablets 32,£7.89,£8.09
 
-Save products as csv? (y or N):
+Save products as csv? (y or N): n
+Did not write products
 ```
+
+## Available `npm` scripts
+
+|Script|Info|
+|-|-|
+|`build`|Compiles|
+|`buildDev`|Compiles with hot reload (n.b., doesn't accept cli input hence `N` defaults to `50`)|
+|`start <N>`|Compiles & runs `fetchProducts` (i.e., main logic for fetching `N` products)|
+|`startDev`|Hot reload version of `start <N>`|
+|`simple <N>`|Simpler imperative version of `start <N>`|
+|`simpleDev`|Hot reload version of `simple <N>`|
 
 ## Contributing
 
@@ -134,6 +148,7 @@ Linting instructions available at [eslint-config-jsx](https://www.npmjs.com/pack
 
 but could be:
 > Order within 6hrs 53mins start delivery today
+
 Or (if next day delivery is possible)
 > Order within 6hrs 53mins for next day delivery
 - very simple basket, could be improved:

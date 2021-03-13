@@ -2,13 +2,17 @@
   "name": "medi-nline",
   "version": "1.0.0",
   "description": "Product web scraper for a pharmacy website.",
-  "main": "index.mjs",
+  "main": "dist/fetchProducts.js",
   "engines": {
     "node": ">=13.0.0"
   },
-  "type": "module",
   "scripts": {
-    "start": "node ./src/fetchProducts.mjs"
+    "build": "tsc",
+    "buildDev": "tsc -w",
+    "start": "npm run build && node ./dist/fetchProducts.js",
+    "startDev": "concurrently --kill-others \"npm run buildDev\" \"nodemon ./dist/fetchProducts.js 50\"",
+    "simple": "npm run build && node ./dist/fetchProductsSimple.js",
+    "simpleDev": "concurrently --kill-others \"npm run buildDev\" \"nodemon ./dist/fetchProductsSimple.js 50\""
   },
   "repository": {
     "type": "git",
@@ -29,8 +33,17 @@
     "@babel/core": "^7.12.3",
     "@babel/eslint-parser": "^7.12.1",
     "@babel/eslint-plugin": "^7.12.1",
-    "eslint": "^7.20.0",
-    "eslint-config-jsx": "^1.0.2",
-    "eslint-plugin-react": "^7.21.5"
+    "@types/cheerio": "^0.22.24",
+    "@types/node": "^14.14.31",
+    "@types/source-map-support": "^0.5.3",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
+    "@typescript-eslint/parser": "^4.15.1",
+    "concurrently": "^6.0.0",
+    "eslint": "^7.13.0",
+    "eslint-config-jsx": "^2.0.0",
+    "eslint-plugin-react": "^7.21.5",
+    "nodemon": "^2.0.7",
+    "source-map-support": "^0.5.19",
+    "typescript": "^4.2.2"
   }
 }
