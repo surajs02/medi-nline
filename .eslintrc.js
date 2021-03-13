@@ -1,7 +1,6 @@
 module.exports = {
     extends: ['eslint-config-jsx'],
-    env: { mocha: true },
+    env: { mocha: true, node: true },
     root: true,
-    parser: '@babel/eslint-parser',
     ignorePatterns: ['**/node_modules/*', '**/dist/*'],
 };

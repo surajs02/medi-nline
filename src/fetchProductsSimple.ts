@@ -28,7 +28,7 @@ const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
 
     return $('.product-list-item').toArray().map(elToProduct);
 };
-const fetchProducts = async (tProducts: number = 50, pageNum = 1): Promise<[Product[], number, number, number]> => {
+const fetchProducts = async (tProducts = 50, pageNum = 1): Promise<[Product[], number, number, number]> => {
     let tConcurrentFetches = 1;
     let targetPage: Product[] = [];
     while (targetPage.length < tProducts) {
@@ -98,7 +98,7 @@ const main = async () => {
 };
 
 try {
-    main();
-} catch (e) {
+    void main();
+} catch (e: unknown) {
     console.error('Main failed', e);
 }

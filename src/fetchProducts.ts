@@ -88,5 +88,5 @@ const main = async () => {
             : 'Did not write products'
     );
 };
-tryOrDAsync(noop, { isVerbose: true })(main)
+void tryOrDAsync(noop, { isVerbose: true })(main);
 

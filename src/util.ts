@@ -10,12 +10,12 @@ import { fileURLToPath } from 'url';
 import readline from 'readline';
 import { FunctionAny, Last, Reverse } from './types';
 
-export const identity = <T>(v: T, ...a: any[]): T => v;
+export const identity = <T>(v: T, ...__: any[]): T => v;
 export const tauto = (): boolean => true;
 export const contra = (): boolean => false;
-export const noop = (): void => {}; // Prefer `null` for nil conditionals.
+export const noop = (): null => null; // Prefer `null` for nil conditionals.
 export const isNil = <T>(v: T): boolean => v == null;
-export const isEmpty = (v: (object | any[] | string)): boolean  => {
+export const isEmpty = (v: (any | any[] | string)): boolean => {
     switch (typeof v) {
         case 'object': {
             return v == null
@@ -35,26 +35,27 @@ export const isEmpty = (v: (object | any[] | string)): boolean  => {
 export const negate = (p: (...args: any[]) => boolean = contra) => (...a: any[]): boolean => !p(...a); // NOTE: Cannot explicitly type as args can vary.
 export const eq = <T>(v1: T) => (v2: T): boolean => v1 === v2;
 export const valueType = <T>(v: T): string => typeof v;
-export const isValueType = (valueType: string) => <T>(v: T): boolean => typeof v === valueType;
+export const isValueType = (_valueType: string) => <T>(v: T): boolean => typeof v === _valueType;
 
 export const isBlankStr = (s = ''): boolean => s.trim().length < 1;
 export const toLower = (s = ''): string => s.toLowerCase();
-export const mapWords = (t: (char: string, i: number) => string = identity, delimiter = ' ') => (s = ''): string  => s.split(delimiter).map(t).join(delimiter);
+export const mapWords = (t: (char: string, i: number) => string = identity, delimiter = ' ') => (s = ''): string => s.split(delimiter).map(t).join(delimiter);
 export const pluralize = (s = '', count = 1): string => count === 1 ? s : `${s}s`;
 // Pluralizes words in `s` using a `wordMap` containing `word: count` entries (e.g.,
 // `pluralizeWords({ page: pages.length })('fetched page')` returns 'fetched pages').
 export const pluralizeWords = (wordMap: Record<string, number> = {}, t: (char: string, count: number) => string = pluralize) => (s = '') => mapWords(v => v in wordMap ? t(v, wordMap[v]) : v)(s);
 
+// eslint-disable-next-line operator-linebreak
 export const comp =
-    <Fs extends FunctionAny[]>(...fs: Fs) =>
-    (x: any) => {
-        // TODO: Add typing to each function args/return for chain typing rather than final type?
-        type _Reversed = Reverse<Fs>;
-        type _Last = Last<_Reversed>;
-        type _ReturnType = ReturnType<_Last extends FunctionAny ? _Last : any>;
+    <Fs extends FunctionAny[]>(...fns: Fs) =>
+        (x: any) => {
+            // TODO: Add typing to each function args/return for chain typing rather than final type?
+            type _Reversed = Reverse<Fs>;
+            type _Last = Last<_Reversed>;
+            type _ReturnType = ReturnType<_Last extends FunctionAny ? _Last : any>;
 
-        return [...fs].reverse().reduce( (a, v) => v(a), x) as _ReturnType;
-    }
+            return [...fns].reverse().reduce( (a, v) => v(a), x) as _ReturnType;
+        };
 
 export const map = <T, U>(t: (v: T, i: number) => U) => (a: T[] = []): U[] => a.map(t);
 export const filter = <T>(p: (v: T, i: number) => boolean = tauto) => (a: T[] = []): T[] => a.filter(p);
@@ -78,7 +79,7 @@ export const takeWhile = <T>(p: (v: T, arr: T[]) => boolean = contra) => (a: T[]
     }
     return res;
 };
-export const range = (end = 10, start = 0): number[] => [...Array(end).keys()].map(n => n + start);
+export const range = (end = 10, start = 0): number[] => [...Array<number>(end).keys()].map(n => n + start);
 export const join = (delimiter = ',') => (a: string[] = []): string => a.join(delimiter);
 export const count = <T>(a: T[] = []): number => a.length;
 export const countIs = (n: number) => <T>(a: T[] = []): boolean => a.length === n;
@@ -97,9 +98,9 @@ export const mapEntries = <T, U>(
         setKey = (__, k) => k,
         keep = tauto,
     }: {
-        setValue?: (value: T, k: string, o: Record<string, T>) => T | U,
-        setKey?: (value: T, key: string, o: Record<string, T>) => string,
-        keep?: (value: T, k: string, o: Record<string, T>) => boolean,
+        setValue?: (value: T, k: string, o: Record<string, T>) => T | U;
+        setKey?: (value: T, key: string, o: Record<string, T>) => string;
+        keep?: (value: T, k: string, o: Record<string, T>) => boolean;
     } = {}
 ) => (o: Record<string, T> = {}): Record<string, T | U> =>
     Object.keys(o).reduce(
@@ -115,32 +116,32 @@ export const delimitKeys = (delimiter = ',') => <T>(o: Record<string, T> = {}) =
 export const delimitValues = (delimiter = ',') => <T>(o: Record<string, T> = {}) => Object.values(o).join(delimiter); // TODO: String safety.
 
 // Prefer `ife` aka IIFE to reduce parentheses.
-export const ife = (f: Function = noop, ...a: []) => (() => f(...a))();
-export const throwIf = <T>(p: (v: T) => boolean  = tauto, m = 'No error message') => (v: T) => p(v)
+export const ife = (f: FunctionAny = noop, ...a: []) => (() => f(...a))();
+export const throwIf = <T>(p: (v: T) => boolean = tauto, m = 'No error message') => (v: T) => p(v)
     ? ife(() => {
         throw new Error(m);
     })
     : v;
-export const tryOrD = (d: Function, { isVerbose = false }: { isVerbose?: boolean } = {}) => (f: Function) => {
+export const tryOrD = (d: FunctionAny, { isVerbose = false }: { isVerbose?: boolean } = {}) => (f: FunctionAny) => {
     try {
         return f();
-    } catch (e) {
+    } catch (e: unknown) {
         if (isVerbose) console.warn(`Tried [${f.name}] but failed, defaulting to [${d.name}]\n`, e);
 
         return d();
     }
 };
-export const tryOrDAsync = (d: Function, { isVerbose = false }: { isVerbose?: boolean } = {}) => async (f: Function) => {
+export const tryOrDAsync = (d: FunctionAny, { isVerbose = false }: { isVerbose?: boolean } = {}) => async (f: FunctionAny) => {
     try {
         await f();
-    } catch (e) {
+    } catch (e: unknown) {
         if (isVerbose) console.warn(`Tried [${f.name}] but failed, defaulting to [${d.name}]\n`, e);
         return d();
     }
 };
 export const log = (
     m: string,
-    { logger = console.debug, t = identity }: { logger?: (m: string, ...a: any[]) => any, t?: (v: any) => any } = {}
+    { logger = console.debug, t = identity }: { logger?: (m: string, ...a: any[]) => any; t?: (v: any) => any } = {}
 ) => (...a: any[]) => {
     logger(m, ...a.map(t));
     return a[0];
@@ -153,13 +154,12 @@ export const isIntLike = (v: string): boolean => {
 export const inc = (v: number): number => v + 1;
 
 export const promiseMap = <T>(
-    t: (value?: T) => Promise<T> = Promise.resolve,
-    { concurrency = Infinity, results = [] }: { concurrency?: number, results?: T[] } = {}
+    t: (value: T) => Promise<T> = v => Promise.resolve(v),
+    { concurrency = Infinity, results = [] }: { concurrency?: number; results?: T[] } = {}
 ) => async (data: T[] = []): Promise<T[]> => {
     if (data.length < 1) return results;
 
     const [mappableData, nextData] = takePartition(concurrency)(data);
-    console.log('doing an await')
     const next = await Promise.all(mappableData.map(t));
     results = results.concat(next);
 
@@ -174,7 +174,7 @@ export const promiseMap = <T>(
 };
 // TODO: Support concurrency.
 // Applies promise `handler` to `data` until `p` returns false or `data` no longer changes between iterations.
-export const promiseWhile = <T>(handler: (value: T) => Promise<T> = Promise.resolve, p: (v: T) => boolean = contra, dataT: (value: T) => T = identity) => async (data: T): Promise<T> => {
+export const promiseWhile = <T>(handler: (value: T) => Promise<T> = v => Promise.resolve(v), p: (v: T) => boolean = contra, dataT: (value: T) => T = identity) => async (data: T): Promise<T> => {
     const r = await handler(data);
     const nextData = dataT(data);
 
@@ -201,7 +201,7 @@ export const fileExists = (p: string): Promise<boolean> =>
 // Overwrite.
 export const fileWrite = (p: string, data: string): Promise<void> =>
     new Promise((r, j) => fs.writeFile(
-        p, data, e => e ? j(e) : r()
+        p, data, e => e != null ? j(e) : r()
     ));
 export const getPathStat = (p: string): Promise<fs.Stats> => new Promise(
     (r, j) => fs.lstat(p, (e, stats) => e == null ? r(stats) : j(e))
