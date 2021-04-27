@@ -37,8 +37,6 @@ const fetchPageProducts = async (pageNum: number): Promise<Product[]> => {
             valueMapper: (className: string) => elClassToText(className),
         })(PRODUCT_CLASSES);
 
-        // console.log('elClassTextMap', elClassTextMap);
-
         return elClassTextMap as unknown as Product;
     };
 
