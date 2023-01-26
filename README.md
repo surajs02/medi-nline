@@ -1,6 +1,6 @@
 # medi-nline
 
-<div align="center"><img src="./logo/nline.png" width="50%"/></div>
+<div align="center"><img src="./img/nline.png" width="50%"/></div>
 
 `medi-nline` is a Node CLI web scraper that fetches products from a pharmacy website, which are printed and optionally saved as `csv`.
 
